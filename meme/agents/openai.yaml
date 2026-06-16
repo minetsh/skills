@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meme Sticker"
+  short_description: "Generate transparent meme stickers"
+  default_prompt: "Use $meme to create a 240x240 transparent chibi sticker from a reference image."
