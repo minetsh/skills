@@ -1,4 +1,4 @@
 interface:
   display_name: "Meme Sticker"
   short_description: "Generate transparent meme stickers"
-  default_prompt: "Use $meme to create a 240x240 transparent chibi sticker from a reference image."
+  default_prompt: "Use $meme to make WeChat-ready transparent meme stickers from a reference image or description (art style follows the reference or your request, not fixed chibi), plus banner, cover, chat icon and appreciation images."

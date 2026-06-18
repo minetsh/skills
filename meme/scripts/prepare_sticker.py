@@ -24,7 +24,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True, help="Source PNG with a flat chroma-key background.")
     parser.add_argument("--output", required=True, help="Final transparent PNG path.")
-    parser.add_argument("--size", type=int, default=240, help="Final square size in pixels.")
+    parser.add_argument("--size", type=int, default=240, help="Final square size in pixels (used when --width/--height are not set).")
+    parser.add_argument("--width", type=int, help="Explicit output width; overrides --size. Use with --height for non-square assets (banner 750x400, appreciation 750x560 / 750x750).")
+    parser.add_argument("--height", type=int, help="Explicit output height; overrides --size.")
     parser.add_argument("--key", help="Explicit key color, such as '#00ff00'.")
     parser.add_argument(
         "--auto-key",
@@ -38,6 +40,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--outline-color", default="#ffffff", help="Outline color.")
     parser.add_argument("--no-despill", action="store_true", help="Disable simple green/magenta key-color despill.")
     parser.add_argument("--edge-contract", type=int, default=0, help="Contract alpha mask by this many pixels before resize.")
+    parser.add_argument(
+        "--keep-background",
+        action="store_true",
+        help="Opaque poster/banner mode: skip chroma-key removal, despill, edge-contract and outline; just resize and validate. Use for 横幅/赞赏引导图/赞赏致谢图/宣传海报.",
+    )
+    parser.add_argument("--max-bytes", type=int, help="Validate the output file is at most this many bytes (e.g. 512000 for 500KB, 102400 for 100KB).")
     parser.add_argument("--report", help="Optional JSON validation report path.")
     return parser.parse_args()
 
@@ -110,8 +118,9 @@ def remove_key(
             if key_g > key_r and key_g > key_b:
                 g = min(g, int(round((r + b) / 2 + 18)))
             elif key_r > key_g and key_b > key_g:
-                r = min(r, int(round((g + b) / 2 + 18)))
-                b = min(b, int(round((r + g) / 2 + 18)))
+                new_r = min(r, int(round((g + b) / 2 + 18)))
+                new_b = min(b, int(round((r + g) / 2 + 18)))
+                r, b = new_r, new_b
 
         out.append((r, g, b, alpha))
 
@@ -130,8 +139,8 @@ def contract_alpha(image: Image.Image, pixels: int) -> Image.Image:
     return result
 
 
-def resize_square(image: Image.Image, size: int) -> Image.Image:
-    return image.resize((size, size), Image.Resampling.LANCZOS)
+def resize_to(image: Image.Image, width: int, height: int) -> Image.Image:
+    return image.resize((width, height), Image.Resampling.LANCZOS)
 
 
 def add_outline(image: Image.Image, width: int, color: str) -> Image.Image:
@@ -163,26 +172,48 @@ def iter_image_data(image: Image.Image):
     return image.getdata()
 
 
-def validate(image: Image.Image, path: Path) -> dict:
+def validate(
+    image: Image.Image,
+    path: Path,
+    target: Tuple[int, int] | None = None,
+    require_transparent: bool = True,
+    max_bytes: int | None = None,
+) -> dict:
     rgba = image.convert("RGBA")
     alpha = rgba.getchannel("A")
     data = list(iter_image_data(alpha))
     nonzero = sum(1 for value in data if value > 0)
     opaque = sum(1 for value in data if value >= 250)
     partial = sum(1 for value in data if 0 < value < 250)
+    transparent_pixels = sum(1 for value in data if value == 0)
     w, h = rgba.size
+    corners = alpha_corners(rgba)
+    size_bytes = path.stat().st_size if path.exists() else 0
+    size_ok = True if target is None else [w, h] == [int(target[0]), int(target[1])]
+    bytes_ok = True if max_bytes is None else size_bytes <= max_bytes
+    if require_transparent:
+        transparency_ok = nonzero > 0 and max(corners) == 0
+    else:
+        transparency_ok = transparent_pixels == 0
     report = {
         "path": str(path),
         "size": [w, h],
         "mode": rgba.mode,
-        "corners_alpha": alpha_corners(rgba),
+        "corners_alpha": corners,
         "alpha_bbox": list(alpha.getbbox() or []),
         "nonzero_alpha_pixels": nonzero,
         "opaque_pixels": opaque,
         "partial_alpha_pixels": partial,
+        "transparent_pixels": transparent_pixels,
         "coverage": round(nonzero / (w * h), 4) if w and h else 0,
-        "bytes": path.stat().st_size if path.exists() else 0,
-        "ok": bool(w == h and nonzero > 0 and max(alpha_corners(rgba)) == 0),
+        "bytes": size_bytes,
+        "target_size": [int(target[0]), int(target[1])] if target else None,
+        "max_bytes": max_bytes,
+        "size_ok": size_ok,
+        "bytes_ok": bytes_ok,
+        "transparency_ok": transparency_ok,
+        "require_transparent": require_transparent,
+        "ok": bool(size_ok and bytes_ok and transparency_ok),
     }
     return report
 
@@ -193,22 +224,37 @@ def main() -> None:
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    image = Image.open(source)
-    key = resolve_key(image, args.key, args.auto_key)
-    transparent = remove_key(
-        image,
-        key=key,
-        transparent_threshold=args.transparent_threshold,
-        opaque_threshold=args.opaque_threshold,
-        despill=not args.no_despill,
-    )
-    transparent = contract_alpha(transparent, args.edge_contract)
-    final = resize_square(transparent, args.size)
-    final = add_outline(final, args.outline, args.outline_color)
-    final.save(output)
+    target_w = args.width if args.width else args.size
+    target_h = args.height if args.height else args.size
 
-    report = validate(final, output)
-    report["key_color"] = "#{:02x}{:02x}{:02x}".format(*key)
+    image = Image.open(source)
+
+    if args.keep_background:
+        final = resize_to(image.convert("RGBA"), target_w, target_h)
+        final.convert("RGB").save(output)
+        key = None
+    else:
+        key = resolve_key(image, args.key, args.auto_key)
+        transparent = remove_key(
+            image,
+            key=key,
+            transparent_threshold=args.transparent_threshold,
+            opaque_threshold=args.opaque_threshold,
+            despill=not args.no_despill,
+        )
+        transparent = contract_alpha(transparent, args.edge_contract)
+        final = resize_to(transparent, target_w, target_h)
+        final = add_outline(final, args.outline, args.outline_color)
+        final.save(output)
+
+    report = validate(
+        Image.open(output),
+        output,
+        target=(target_w, target_h),
+        require_transparent=not args.keep_background,
+        max_bytes=args.max_bytes,
+    )
+    report["key_color"] = "#{:02x}{:02x}{:02x}".format(*key) if key else None
     if args.report:
         report_path = Path(args.report)
         report_path.parent.mkdir(parents=True, exist_ok=True)

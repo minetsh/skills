@@ -260,6 +260,28 @@ def copy_all_payload(data: dict, stickers: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def appreciation_problems(data: dict, guide: str, guide_image: str, thanks_image: str, base_dir: Path) -> list[str]:
+    issues = []
+    if not bool(data.get("appreciation", True)):
+        issues.append("appreciation 应为 true：赞赏为必备项。")
+    if not guide:
+        issues.append("缺少赞赏引导语（5-15 汉字）。")
+    elif not 5 <= len(guide) <= 15:
+        issues.append(f"赞赏引导语需 5-15 汉字（当前 {len(guide)}）。")
+    if not image_exists(guide_image, base_dir):
+        issues.append("缺少赞赏引导图（750×560，PNG/GIF ≤500KB）。")
+    if not image_exists(thanks_image, base_dir):
+        issues.append("缺少赞赏致谢图（750×750，PNG/GIF ≤500KB）。")
+    return issues
+
+
+def inline_warning_list(title: str, issues: list[str]) -> str:
+    if not issues:
+        return ""
+    items = "".join(f"<li>{e(item)}</li>" for item in issues)
+    return f'<div class="inline-warning"><strong>{e(title)}</strong><ul>{items}</ul></div>'
+
+
 def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
     output_dir = output_path.parent
     stickers = sticker_items(data)
@@ -273,10 +295,14 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
     styles = list_value(data, "styles")
     theme = text_value(data, "theme")
     download_region = text_value(data, "download_region")
-    appreciation = bool(data.get("appreciation", False))
+    appreciation = bool(data.get("appreciation", True))
     appreciation_guide = text_value(data, "appreciation_guide")
     appreciation_guide_image = text_value(data, "appreciation_guide_image")
     appreciation_thanks_image = text_value(data, "appreciation_thanks_image")
+    appreciation_issues = appreciation_problems(
+        data, appreciation_guide, appreciation_guide_image, appreciation_thanks_image, base_dir
+    )
+    appreciation_warning = inline_warning_list("赞赏为必备项，请补齐：", appreciation_issues)
     copyright_cert = set(list_value(data, "copyright_cert"))
     style_warning = "" if 1 <= len(styles) <= 2 else '<p class="inline-warning">表情风格需选择 1-2 项。</p>'
     copy_all = json.dumps(copy_all_payload(data, stickers), ensure_ascii=False).replace("</", "<\\/")
@@ -747,12 +773,13 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
 
       <div class="section">
         <div class="section-title"><h3>赞赏功能</h3></div>
+        {appreciation_warning}
         <div class="field-grid">
-          {value_row('赞赏引导语', appreciation_guide, 15, '官方要求：5-15 个汉字，建议与表情强关联。') if appreciation else optional_value_row('赞赏引导语', '')}
+          {value_row('赞赏引导语', appreciation_guide, 15, '官方要求：5-15 个汉字，建议与表情强关联。')}
           <div class="field-row">
             <div class="field-label-line"><span class="field-label">赞赏状态</span></div>
             <div style="height: var(--space-3);"></div>
-            <span class="toggle-state">{'已准备赞赏素材' if appreciation else '未开启赞赏'}</span>
+            <span class="toggle-state">{'赞赏素材齐全' if not appreciation_issues else '赞赏素材待补齐'}</span>
           </div>
           <div class="field-row">
             <div class="field-label-line"><span class="field-label">素材限制</span></div>
