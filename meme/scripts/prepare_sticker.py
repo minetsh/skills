@@ -39,6 +39,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--outline", type=int, default=2, help="White outline width in final pixels. Use 0 to disable.")
     parser.add_argument("--outline-color", default="#ffffff", help="Outline color.")
     parser.add_argument("--no-despill", action="store_true", help="Disable simple green/magenta key-color despill.")
+    parser.add_argument(
+        "--despill-strength",
+        type=float,
+        default=1.0,
+        help=(
+            "How aggressively to neutralize key-color spill on the soft (partial-alpha) edge band, "
+            "0..1. 1.0 fully neutralizes the green/magenta fringe (best for white/fluffy fur); "
+            "lower it only if a genuinely green/magenta edge gets desaturated. Solid interior pixels "
+            "always keep a gentle despill so pale subjects are not recolored."
+        ),
+    )
     parser.add_argument("--edge-contract", type=int, default=0, help="Contract alpha mask by this many pixels before resize.")
     parser.add_argument(
         "--keep-background",
@@ -95,6 +106,7 @@ def remove_key(
     transparent_threshold: float,
     opaque_threshold: float,
     despill: bool,
+    despill_strength: float = 1.0,
 ) -> Image.Image:
     if opaque_threshold <= transparent_threshold:
         raise ValueError("--opaque-threshold must be greater than --transparent-threshold")
@@ -103,6 +115,13 @@ def remove_key(
     out = []
     key_r, key_g, key_b = key
     span = opaque_threshold - transparent_threshold
+
+    # Chroma fringe lives in the partial-alpha edge band, so neutralize the key channel
+    # harder there (scaled by despill_strength) while solid interior keeps a gentle bias
+    # to avoid recoloring pale subjects.
+    interior_bias = 18.0
+    strength = max(0.0, min(1.0, despill_strength))
+    edge_bias = interior_bias * (1.0 - strength)
 
     for r, g, b, original_a in iter_image_data(rgba):
         distance = color_distance((r, g, b), key)
@@ -115,11 +134,13 @@ def remove_key(
             alpha = int(round(original_a * t))
 
         if despill and alpha > 0:
+            is_edge = alpha < original_a
+            bias = edge_bias if is_edge else interior_bias
             if key_g > key_r and key_g > key_b:
-                g = min(g, int(round((r + b) / 2 + 18)))
+                g = min(g, int(round((r + b) / 2 + bias)))
             elif key_r > key_g and key_b > key_g:
-                new_r = min(r, int(round((g + b) / 2 + 18)))
-                new_b = min(b, int(round((r + g) / 2 + 18)))
+                new_r = min(r, int(round((g + b) / 2 + bias)))
+                new_b = min(b, int(round((r + g) / 2 + bias)))
                 r, b = new_r, new_b
 
         out.append((r, g, b, alpha))
@@ -241,6 +262,7 @@ def main() -> None:
             transparent_threshold=args.transparent_threshold,
             opaque_threshold=args.opaque_threshold,
             despill=not args.no_despill,
+            despill_strength=args.despill_strength,
         )
         transparent = contract_alpha(transparent, args.edge_contract)
         final = resize_to(transparent, target_w, target_h)
