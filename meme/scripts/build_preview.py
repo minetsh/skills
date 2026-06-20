@@ -9,43 +9,6 @@ import sys
 
 
 TYPE_OPTIONS = [("static", "静态表情"), ("animated", "动态表情")]
-ADDITIONAL_TYPE_OPTIONS = ["真人拍摄表情", "截图表情", "卡通表情/其他"]
-STYLE_OPTIONS = [
-    "日常",
-    "软萌可爱",
-    "二次元",
-    "长辈风",
-    "搞笑",
-    "丧/佛系",
-    "魔性鬼畜",
-    "恶搞",
-    "简笔画",
-    "赛博朋克",
-    "蒸汽波",
-    "像素",
-    "暗黑",
-    "复古",
-]
-THEME_OPTIONS = [
-    "万能通用",
-    "网络热点",
-    "节日",
-    "考试/学习",
-    "工作/职场",
-    "情侣",
-    "毕业",
-    "刷屏",
-    "红包相关",
-    "游戏",
-    "运动/健身",
-    "怼人/斗图",
-    "群聊必备",
-    "节气",
-    "邀约/约起来",
-    "励志鼓舞",
-]
-DOWNLOAD_REGION_OPTIONS = ["全球", "中国大陆"]
-COPYRIGHT_CERT_OPTIONS = ["涉及肖像权授权", "涉及版权授权"]
 
 
 def parse_args() -> argparse.Namespace:
@@ -159,17 +122,6 @@ def value_row(label: str, value: str, limit: int | None = None, helper: str = ""
     """
 
 
-def optional_value_row(label: str, value: str) -> str:
-    if not value:
-        return f"""
-        <div class="field-row">
-          <div class="field-label-line"><span class="field-label">{e(label)}</span></div>
-          <div class="copy-value muted-value"><span>未选择</span></div>
-        </div>
-        """
-    return value_row(label, value)
-
-
 def chips(options: list, selected: set[str]) -> str:
     rendered = []
     for option in options:
@@ -195,7 +147,7 @@ def image_block(label: str, path_text: str, base_dir: Path, output_dir: Path, ra
     style = f"aspect-ratio:{ratio};"
     if image_exists(path_text, base_dir):
         src = image_source(path_text, base_dir, output_dir)
-        media = f'<img src="{e(src)}" alt="{e(label)}">'
+        media = f'<img class="zoomable" src="{e(src)}" alt="{e(label)}">'
     else:
         missing = "未提供" if not path_text else "文件未找到"
         media = f'<div class="asset-placeholder"><strong>{e(missing)}</strong><span>{e(path_text or caption)}</span></div>'
@@ -218,7 +170,7 @@ def sticker_grid(stickers: list[dict], base_dir: Path, output_dir: Path) -> str:
         counter_state = "over" if len(meaning) > 4 else "ok"
         if image_exists(image, base_dir):
             src = image_source(image, base_dir, output_dir)
-            visual = f'<img src="{e(src)}" alt="{e(meaning or "表情图")}">'
+            visual = f'<img class="zoomable" src="{e(src)}" alt="{e(meaning or "表情图")}">'
         else:
             visual = f'<div class="sticker-placeholder"><strong>未找到</strong><span>{e(image or "未提供路径")}</span></div>'
         rendered.append(
@@ -290,10 +242,6 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
     name = text_value(data, "name")
     intro = text_value(data, "intro")
     copyright = text_value(data, "copyright")
-    additional_type = text_value(data, "additional_type")
-    role = text_value(data, "role")
-    styles = list_value(data, "styles")
-    theme = text_value(data, "theme")
     download_region = text_value(data, "download_region")
     appreciation = bool(data.get("appreciation", True))
     appreciation_guide = text_value(data, "appreciation_guide")
@@ -303,8 +251,6 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
         data, appreciation_guide, appreciation_guide_image, appreciation_thanks_image, base_dir
     )
     appreciation_warning = inline_warning_list("赞赏为必备项，请补齐：", appreciation_issues)
-    copyright_cert = set(list_value(data, "copyright_cert"))
-    style_warning = "" if 1 <= len(styles) <= 2 else '<p class="inline-warning">表情风格需选择 1-2 项。</p>'
     copy_all = json.dumps(copy_all_payload(data, stickers), ensure_ascii=False).replace("</", "<\\/")
 
     return f"""<!doctype html>
@@ -323,6 +269,8 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
       --line: rgba(74, 61, 43, 0.16);
       --accent: #2f6f62;
       --accent-soft: #d8ece4;
+      --accent-hover: #cce5dc;
+      --checker: #fbf7ee;
       --warn: #a66b1f;
       --warn-soft: #fff0d3;
       --bad: #b4483e;
@@ -551,7 +499,6 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
     }}
 
     .copy-value span:first-child {{ min-width: 0; }}
-    .muted-value {{ color: var(--muted); }}
 
     .copy-button {{
       flex: 0 0 auto;
@@ -566,7 +513,7 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
       transition: transform 180ms ease, background 180ms ease;
     }}
 
-    .copy-button:hover {{ background: #cce5dc; }}
+    .copy-button:hover {{ background: var(--accent-hover); }}
 
     .counter {{ font-size: 12px; font-weight: 800; }}
     .counter-ok {{ color: var(--muted); }}
@@ -593,7 +540,7 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
       overflow: hidden;
-      background-color: #fbf7ee;
+      background-color: var(--checker);
       background-image:
         linear-gradient(45deg, rgba(47, 111, 98, 0.10) 25%, transparent 25%),
         linear-gradient(-45deg, rgba(47, 111, 98, 0.10) 25%, transparent 25%),
@@ -605,6 +552,7 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
 
     .sticker-image {{ aspect-ratio: 1; padding: var(--space-4); }}
     .sticker-image img, .asset-frame img {{ max-width: 100%; max-height: 100%; object-fit: contain; display: block; }}
+    .zoomable {{ cursor: zoom-in; }}
     .sticker-meta {{ display: grid; gap: var(--space-2); margin-top: var(--space-3); }}
     .sticker-index {{ color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; }}
     .compact-copy {{ margin-top: 0; }}
@@ -631,8 +579,6 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
     .asset-frame.compact {{ max-width: 180px; }}
     figcaption {{ color: var(--muted); font-size: 12px; margin-top: var(--space-2); }}
 
-    .info-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }}
-    .wide {{ grid-column: 1 / -1; }}
     .static-row {{ color: var(--muted); line-height: 1.7; }}
     .static-row strong {{ color: var(--ink); }}
     .toggle-state {{
@@ -646,17 +592,99 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
       border: 1px solid {('var(--accent)' if appreciation else 'var(--line)')};
     }}
 
-    .check-list {{ display: grid; gap: var(--space-2); }}
-    .check-item {{ display: flex; align-items: center; gap: var(--space-2); color: var(--muted); }}
-    .check-mark {{ width: 16px; height: 16px; border-radius: 5px; border: 1px solid var(--line); background: rgba(255,255,255,0.5); }}
-    .check-item.selected {{ color: var(--ink); font-weight: 750; }}
-    .check-item.selected .check-mark {{ border-color: var(--accent); background: linear-gradient(135deg, var(--accent), #5a9586); }}
     .inline-warning {{ color: var(--warn); background: var(--warn-soft); border: 1px solid rgba(166, 107, 31, 0.22); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3); margin: var(--space-3) 0 0; }}
     .empty-panel {{ border: 1px dashed var(--line); border-radius: var(--radius-md); padding: var(--space-6); color: var(--muted); background: rgba(255,255,255,0.36); }}
 
+    body.lightbox-open {{ overflow: hidden; }}
+
+    .lightbox[hidden] {{ display: none; }}
+
+    .lightbox {{
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: var(--space-6);
+      background: rgba(37, 33, 24, 0.82);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    }}
+
+    .lightbox.is-open {{ opacity: 1; }}
+
+    .lightbox-content {{
+      display: grid;
+      gap: var(--space-3);
+      place-items: center;
+      margin: 0;
+      color: var(--soft);
+      transform: scale(0.96);
+      opacity: 0;
+      transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+    }}
+
+    .lightbox.is-open .lightbox-content {{ transform: scale(1); opacity: 1; }}
+
+    .lightbox-image-panel {{
+      display: grid;
+      place-items: center;
+      max-width: min(90vw, 1080px);
+      max-height: 84vh;
+      padding: var(--space-4);
+      border: 1px solid rgba(255, 250, 241, 0.24);
+      border-radius: var(--radius-lg);
+      background-color: var(--checker);
+      background-image:
+        linear-gradient(45deg, rgba(47, 111, 98, 0.10) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(47, 111, 98, 0.10) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(47, 111, 98, 0.10) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(47, 111, 98, 0.10) 75%);
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+      background-size: 20px 20px;
+      box-shadow: 0 28px 90px rgba(20, 17, 12, 0.42);
+    }}
+
+    .lightbox-image-panel img {{
+      display: block;
+      max-width: calc(min(90vw, 1080px) - var(--space-6));
+      max-height: calc(84vh - var(--space-6));
+      object-fit: contain;
+    }}
+
+    .lightbox-caption {{
+      max-width: min(90vw, 720px);
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: center;
+      text-shadow: 0 1px 16px rgba(20, 17, 12, 0.45);
+    }}
+
+    .lightbox-close {{
+      position: fixed;
+      top: var(--space-5);
+      right: var(--space-5);
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255, 250, 241, 0.28);
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 14px 40px rgba(20, 17, 12, 0.26);
+      transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), background 180ms ease;
+    }}
+
+    .lightbox-close:hover {{ background: var(--accent-hover); transform: translateY(-1px); }}
+    .lightbox-close:active {{ transform: translateY(1px) scale(0.98); }}
+
     @media (max-width: 840px) {{
       .page {{ width: min(100% - 24px, 680px); padding: var(--space-6) 0; }}
-      .hero, .field-grid, .asset-grid, .info-grid {{ grid-template-columns: 1fr; }}
+      .hero, .field-grid, .asset-grid {{ grid-template-columns: 1fr; }}
       .card-header, .section {{ padding: var(--space-5); }}
       .asset-frame.compact {{ max-width: 100%; }}
     }}
@@ -719,60 +747,12 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
     <section class="form-card">
       <div class="card-header">
         <div>
-          <h2>填写附加信息</h2>
-          <p>附加类型、风格主题与授权证明选项。</p>
+          <h2>赞赏功能</h2>
+          <p>必备赞赏引导语与赞赏素材（引导图 750×560、致谢图 750×750）。</p>
         </div>
       </div>
 
       <div class="section">
-        <div class="info-grid">
-          <div class="field-row wide">
-            <div class="field-label-line"><span class="field-label">类型</span></div>
-            <div style="height: var(--space-3);"></div>
-            {chips(ADDITIONAL_TYPE_OPTIONS, {additional_type})}
-          </div>
-          {optional_value_row('角色/内容', role)}
-          <div class="field-row">
-            <div class="field-label-line"><span class="field-label">上架地区</span></div>
-            <div class="copy-value muted-value"><span>中国大陆</span></div>
-          </div>
-          <div class="field-row wide">
-            <div class="field-label-line"><span class="field-label">表情风格</span></div>
-            <div style="height: var(--space-3);"></div>
-            {chips(STYLE_OPTIONS, set(styles))}
-            {style_warning}
-          </div>
-          <div class="field-row wide">
-            <div class="field-label-line"><span class="field-label">表情主题</span></div>
-            <div style="height: var(--space-3);"></div>
-            {chips(THEME_OPTIONS, {theme})}
-          </div>
-          <div class="field-row">
-            <div class="field-label-line"><span class="field-label">下载地区</span></div>
-            <div style="height: var(--space-3);"></div>
-            {chips(DOWNLOAD_REGION_OPTIONS, {download_region})}
-          </div>
-          <div class="field-row">
-            <div class="field-label-line"><span class="field-label">表情赞赏</span></div>
-            <div style="height: var(--space-3);"></div>
-            <span class="toggle-state">{'接受赞赏：开启' if appreciation else '接受赞赏：关闭'}</span>
-          </div>
-          <div class="field-row">
-            <div class="field-label-line"><span class="field-label">版权证明</span></div>
-            <div style="height: var(--space-3);"></div>
-            <div class="check-list">
-              {''.join(f'<div class="check-item {"selected" if option in copyright_cert else ""}"><span class="check-mark"></span><span>{e(option)}</span></div>' for option in COPYRIGHT_CERT_OPTIONS)}
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field-label-line"><span class="field-label">证明文件</span></div>
-            <p class="static-row">选填，支持 JPG/PNG/BMP/PDF，各≤10MB。</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title"><h3>赞赏功能</h3></div>
         {appreciation_warning}
         <div class="field-grid">
           {value_row('赞赏引导语', appreciation_guide, 15, '官方要求：5-15 个汉字，建议与表情强关联。')}
@@ -795,8 +775,21 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
     </section>
   </main>
 
+  <div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="图片放大预览">
+    <button class="lightbox-close" type="button" data-lightbox-close aria-label="关闭图片预览">×</button>
+    <figure class="lightbox-content">
+      <div class="lightbox-image-panel"><img data-lightbox-image alt=""></div>
+      <figcaption class="lightbox-caption" data-lightbox-caption></figcaption>
+    </figure>
+  </div>
+
   <script>
     const COPY_ALL_TEXT = {copy_all};
+    const lightbox = document.querySelector('[data-lightbox]');
+    const lightboxImage = document.querySelector('[data-lightbox-image]');
+    const lightboxCaption = document.querySelector('[data-lightbox-caption]');
+    const lightboxClose = document.querySelector('[data-lightbox-close]');
+    let lightboxFocusReturn = null;
 
     function fallbackCopy(text) {{
       const textarea = document.createElement('textarea');
@@ -831,6 +824,32 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
       }}, 1200);
     }}
 
+    function openLightbox(image) {{
+      if (!lightbox || !lightboxImage) {{ return; }}
+      lightboxFocusReturn = document.activeElement;
+      lightboxImage.src = image.currentSrc || image.src;
+      lightboxImage.alt = image.alt || '图片预览';
+      if (lightboxCaption) {{ lightboxCaption.textContent = image.alt || ''; }}
+      lightbox.hidden = false;
+      document.body.classList.add('lightbox-open');
+      window.requestAnimationFrame(function () {{
+        lightbox.classList.add('is-open');
+        if (lightboxClose) {{ lightboxClose.focus(); }}
+      }});
+    }}
+
+    function closeLightbox() {{
+      if (!lightbox || lightbox.hidden) {{ return; }}
+      lightbox.classList.remove('is-open');
+      document.body.classList.remove('lightbox-open');
+      window.setTimeout(function () {{
+        lightbox.hidden = true;
+        if (lightboxImage) {{ lightboxImage.removeAttribute('src'); }}
+        if (lightboxFocusReturn && typeof lightboxFocusReturn.focus === 'function') {{ lightboxFocusReturn.focus(); }}
+        lightboxFocusReturn = null;
+      }}, 210);
+    }}
+
     document.querySelectorAll('[data-copy]').forEach(function (button) {{
       button.addEventListener('click', function () {{
         writeCopy(button.getAttribute('data-copy') || '').then(function () {{ flashButton(button); }});
@@ -841,6 +860,20 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
       button.addEventListener('click', function () {{
         writeCopy(COPY_ALL_TEXT).then(function () {{ flashButton(button); }});
       }});
+    }});
+
+    document.addEventListener('click', function (event) {{
+      const clickedElement = event.target instanceof Element ? event.target : null;
+      const image = clickedElement ? clickedElement.closest('.sticker-image img.zoomable, .asset-frame img.zoomable') : null;
+      if (image) {{
+        openLightbox(image);
+        return;
+      }}
+      if (event.target === lightbox || event.target === lightboxClose) {{ closeLightbox(); }}
+    }});
+
+    document.addEventListener('keydown', function (event) {{
+      if (event.key === 'Escape') {{ closeLightbox(); }}
     }});
   </script>
 </body>
