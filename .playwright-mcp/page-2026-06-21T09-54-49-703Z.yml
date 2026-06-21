@@ -1,0 +1,291 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: WeChat Sticker Submission Preview
+      - heading "英短猫日常" [level=1] [ref=e6]
+      - paragraph [ref=e7]: 只读预览已按微信“提交表情专辑”表单组织，资产、选项与文案集中核对；每个可复制文本旁都有复制按钮，可直接搬运到正式提交页。
+    - complementary [ref=e8]:
+      - button "复制全部文案" [ref=e9] [cursor=pointer]
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - strong [ref=e12]: 表情类型
+          - text: ：静态表情
+        - generic [ref=e13]:
+          - strong [ref=e14]: 素材数量
+          - text: ：24 张
+        - generic [ref=e15]:
+          - strong [ref=e16]: 下载地区
+          - text: ：全球
+  - generic [ref=e17]:
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - heading "提交表情专辑" [level=2] [ref=e20]
+        - paragraph [ref=e21]: 上传表情与填写基本信息的最终核对视图。
+      - generic [ref=e22]: 24 张
+    - generic [ref=e23]:
+      - heading "上传表情" [level=3] [ref=e25]
+      - generic [ref=e26]:
+        - generic [ref=e27]: 静态表情
+        - generic [ref=e28]: 动态表情
+      - generic [ref=e30]:
+        - article [ref=e31]:
+          - img "你好" [ref=e33]
+          - generic [ref=e34]:
+            - generic [ref=e35]: "#01"
+            - generic [ref=e36]:
+              - button "复制含义词 你好" [ref=e37] [cursor=pointer]: 你好 已复制
+              - button "复制" [ref=e38] [cursor=pointer]
+            - generic [ref=e39]: 2/4
+        - article [ref=e40]:
+          - img "真棒" [ref=e42]
+          - generic [ref=e43]:
+            - generic [ref=e44]: "#02"
+            - generic [ref=e45]:
+              - button "复制含义词 真棒" [ref=e46] [cursor=pointer]: 真棒 已复制
+              - button "复制" [ref=e47] [cursor=pointer]
+            - generic [ref=e48]: 2/4
+        - article [ref=e49]:
+          - img "偷看" [ref=e51]
+          - generic [ref=e52]:
+            - generic [ref=e53]: "#03"
+            - generic [ref=e54]:
+              - button "复制含义词 偷看" [ref=e55] [cursor=pointer]: 偷看 已复制
+              - button "复制" [ref=e56] [cursor=pointer]
+            - generic [ref=e57]: 2/4
+        - article [ref=e58]:
+          - img "震惊" [ref=e60]
+          - generic [ref=e61]:
+            - generic [ref=e62]: "#04"
+            - generic [ref=e63]:
+              - button "复制含义词 震惊" [ref=e64] [cursor=pointer]: 震惊 已复制
+              - button "复制" [ref=e65] [cursor=pointer]
+            - generic [ref=e66]: 2/4
+        - article [ref=e67]:
+          - img "委屈" [ref=e69]
+          - generic [ref=e70]:
+            - generic [ref=e71]: "#05"
+            - generic [ref=e72]:
+              - button "复制含义词 委屈" [ref=e73] [cursor=pointer]: 委屈 已复制
+              - button "复制" [ref=e74] [cursor=pointer]
+            - generic [ref=e75]: 2/4
+        - article [ref=e76]:
+          - img "哈哈哈" [ref=e78]
+          - generic [ref=e79]:
+            - generic [ref=e80]: "#06"
+            - generic [ref=e81]:
+              - button "复制含义词 哈哈哈" [ref=e82] [cursor=pointer]: 哈哈哈 已复制
+              - button "复制" [ref=e83] [cursor=pointer]
+            - generic [ref=e84]: 3/4
+        - article [ref=e85]:
+          - img "无语" [ref=e87]
+          - generic [ref=e88]:
+            - generic [ref=e89]: "#07"
+            - generic [ref=e90]:
+              - button "复制含义词 无语" [ref=e91] [cursor=pointer]: 无语 已复制
+              - button "复制" [ref=e92] [cursor=pointer]
+            - generic [ref=e93]: 2/4
+        - article [ref=e94]:
+          - img "抱抱" [ref=e96]
+          - generic [ref=e97]:
+            - generic [ref=e98]: "#08"
+            - generic [ref=e99]:
+              - button "复制含义词 抱抱" [ref=e100] [cursor=pointer]: 抱抱 已复制
+              - button "复制" [ref=e101] [cursor=pointer]
+            - generic [ref=e102]: 2/4
+        - article [ref=e103]:
+          - img "爱你" [ref=e105]
+          - generic [ref=e106]:
+            - generic [ref=e107]: "#09"
+            - generic [ref=e108]:
+              - button "复制含义词 爱你" [ref=e109] [cursor=pointer]: 爱你 已复制
+              - button "复制" [ref=e110] [cursor=pointer]
+            - generic [ref=e111]: 2/4
+        - article [ref=e112]:
+          - img "生气" [ref=e114]
+          - generic [ref=e115]:
+            - generic [ref=e116]: "#10"
+            - generic [ref=e117]:
+              - button "复制含义词 生气" [ref=e118] [cursor=pointer]: 生气 已复制
+              - button "复制" [ref=e119] [cursor=pointer]
+            - generic [ref=e120]: 2/4
+        - article [ref=e121]:
+          - img "困死" [ref=e123]
+          - generic [ref=e124]:
+            - generic [ref=e125]: "#11"
+            - generic [ref=e126]:
+              - button "复制含义词 困死" [ref=e127] [cursor=pointer]: 困死 已复制
+              - button "复制" [ref=e128] [cursor=pointer]
+            - generic [ref=e129]: 2/4
+        - article [ref=e130]:
+          - img "真香" [ref=e132]
+          - generic [ref=e133]:
+            - generic [ref=e134]: "#12"
+            - generic [ref=e135]:
+              - button "复制含义词 真香" [ref=e136] [cursor=pointer]: 真香 已复制
+              - button "复制" [ref=e137] [cursor=pointer]
+            - generic [ref=e138]: 2/4
+        - article [ref=e139]:
+          - img "疑惑" [ref=e141]
+          - generic [ref=e142]:
+            - generic [ref=e143]: "#13"
+            - generic [ref=e144]:
+              - button "复制含义词 疑惑" [ref=e145] [cursor=pointer]: 疑惑 已复制
+              - button "复制" [ref=e146] [cursor=pointer]
+            - generic [ref=e147]: 2/4
+        - article [ref=e148]:
+          - img "拒绝" [ref=e150]
+          - generic [ref=e151]:
+            - generic [ref=e152]: "#14"
+            - generic [ref=e153]:
+              - button "复制含义词 拒绝" [ref=e154] [cursor=pointer]: 拒绝 已复制
+              - button "复制" [ref=e155] [cursor=pointer]
+            - generic [ref=e156]: 2/4
+        - article [ref=e157]:
+          - img "拜托" [ref=e159]
+          - generic [ref=e160]:
+            - generic [ref=e161]: "#15"
+            - generic [ref=e162]:
+              - button "复制含义词 拜托" [ref=e163] [cursor=pointer]: 拜托 已复制
+              - button "复制" [ref=e164] [cursor=pointer]
+            - generic [ref=e165]: 2/4
+        - article [ref=e166]:
+          - img "尴尬" [ref=e168]
+          - generic [ref=e169]:
+            - generic [ref=e170]: "#16"
+            - generic [ref=e171]:
+              - button "复制含义词 尴尬" [ref=e172] [cursor=pointer]: 尴尬 已复制
+              - button "复制" [ref=e173] [cursor=pointer]
+            - generic [ref=e174]: 2/4
+        - article [ref=e175]:
+          - img "害怕" [ref=e177]
+          - generic [ref=e178]:
+            - generic [ref=e179]: "#17"
+            - generic [ref=e180]:
+              - button "复制含义词 害怕" [ref=e181] [cursor=pointer]: 害怕 已复制
+              - button "复制" [ref=e182] [cursor=pointer]
+            - generic [ref=e183]: 2/4
+        - article [ref=e184]:
+          - img "冲鸭" [ref=e186]
+          - generic [ref=e187]:
+            - generic [ref=e188]: "#18"
+            - generic [ref=e189]:
+              - button "复制含义词 冲鸭" [ref=e190] [cursor=pointer]: 冲鸭 已复制
+              - button "复制" [ref=e191] [cursor=pointer]
+            - generic [ref=e192]: 2/4
+        - article [ref=e193]:
+          - img "可怜" [ref=e195]
+          - generic [ref=e196]:
+            - generic [ref=e197]: "#19"
+            - generic [ref=e198]:
+              - button "复制含义词 可怜" [ref=e199] [cursor=pointer]: 可怜 已复制
+              - button "复制" [ref=e200] [cursor=pointer]
+            - generic [ref=e201]: 2/4
+        - article [ref=e202]:
+          - img "躺平" [ref=e204]
+          - generic [ref=e205]:
+            - generic [ref=e206]: "#20"
+            - generic [ref=e207]:
+              - button "复制含义词 躺平" [ref=e208] [cursor=pointer]: 躺平 已复制
+              - button "复制" [ref=e209] [cursor=pointer]
+            - generic [ref=e210]: 2/4
+        - article [ref=e211]:
+          - img "搞事" [ref=e213]
+          - generic [ref=e214]:
+            - generic [ref=e215]: "#21"
+            - generic [ref=e216]:
+              - button "复制含义词 搞事" [ref=e217] [cursor=pointer]: 搞事 已复制
+              - button "复制" [ref=e218] [cursor=pointer]
+            - generic [ref=e219]: 2/4
+        - article [ref=e220]:
+          - img "庆祝" [ref=e222]
+          - generic [ref=e223]:
+            - generic [ref=e224]: "#22"
+            - generic [ref=e225]:
+              - button "复制含义词 庆祝" [ref=e226] [cursor=pointer]: 庆祝 已复制
+              - button "复制" [ref=e227] [cursor=pointer]
+            - generic [ref=e228]: 2/4
+        - article [ref=e229]:
+          - img "嫌弃" [ref=e231]
+          - generic [ref=e232]:
+            - generic [ref=e233]: "#23"
+            - generic [ref=e234]:
+              - button "复制含义词 嫌弃" [ref=e235] [cursor=pointer]: 嫌弃 已复制
+              - button "复制" [ref=e236] [cursor=pointer]
+            - generic [ref=e237]: 2/4
+        - article [ref=e238]:
+          - img "打工" [ref=e240]
+          - generic [ref=e241]:
+            - generic [ref=e242]: "#24"
+            - generic [ref=e243]:
+              - button "复制含义词 打工" [ref=e244] [cursor=pointer]: 打工 已复制
+              - button "复制" [ref=e245] [cursor=pointer]
+            - generic [ref=e246]: 2/4
+    - generic [ref=e247]:
+      - heading "填写基本信息" [level=3] [ref=e249]
+      - generic [ref=e250]:
+        - generic [ref=e251]:
+          - generic [ref=e252]:
+            - generic [ref=e253]: 名称
+            - generic [ref=e254]: 5/8
+          - generic [ref=e255]:
+            - generic [ref=e256]: 英短猫日常
+            - button "复制" [ref=e257] [cursor=pointer]
+          - paragraph [ref=e258]: 官方限制：不超过 8 汉字。
+        - generic [ref=e259]:
+          - generic [ref=e260]:
+            - generic [ref=e261]: 介绍
+            - generic [ref=e262]: 29/80
+          - generic [ref=e263]:
+            - generic [ref=e264]: 蓝灰英短猫用圆脸金眼和蓬松表情，陪你轻松接住每个聊天瞬间。
+            - button "复制" [ref=e265] [cursor=pointer]
+          - paragraph [ref=e266]: 官方限制：不超过 80 汉字。
+        - generic [ref=e267]:
+          - generic [ref=e268]:
+            - generic [ref=e269]: 版权
+            - generic [ref=e270]: 4/10
+          - generic [ref=e271]:
+            - generic [ref=e272]: 灰猫工坊
+            - button "复制" [ref=e273] [cursor=pointer]
+          - paragraph [ref=e274]: 官方限制：不超过 10 汉字。
+      - generic [ref=e276]:
+        - figure "750×400 PNG/JPG" [ref=e277]:
+          - generic [ref=e278]: 横幅
+          - img "横幅" [ref=e280]
+          - generic [ref=e281]: 750×400 PNG/JPG
+        - figure "240×240 PNG" [ref=e282]:
+          - generic [ref=e283]: 封面
+          - img "封面" [ref=e285]
+          - generic [ref=e286]: 240×240 PNG
+        - figure "50×50 PNG" [ref=e287]:
+          - generic [ref=e288]: 图标
+          - img "图标" [ref=e290]
+          - generic [ref=e291]: 50×50 PNG
+  - generic [ref=e292]:
+    - generic [ref=e294]:
+      - heading "赞赏功能" [level=2] [ref=e295]
+      - paragraph [ref=e296]: 必备赞赏引导语与赞赏素材（引导图 750×560、致谢图 750×750）。
+    - generic [ref=e297]:
+      - generic [ref=e298]:
+        - generic [ref=e299]:
+          - generic [ref=e300]:
+            - generic [ref=e301]: 赞赏引导语
+            - generic [ref=e302]: 7/15
+          - generic [ref=e303]:
+            - generic [ref=e304]: 喜欢英短赏一口
+            - button "复制" [ref=e305] [cursor=pointer]
+          - paragraph [ref=e306]: 官方要求：5-15 个汉字，建议与表情强关联。
+        - generic [ref=e307]:
+          - generic [ref=e309]: 赞赏状态
+          - generic [ref=e311]: 赞赏素材齐全
+        - generic [ref=e312]:
+          - generic [ref=e314]: 素材限制
+          - paragraph [ref=e315]: 引导图 750×560，致谢图 750×750；PNG/GIF，均≤500KB，避免透明背景。
+      - generic [ref=e317]:
+        - figure "750×560 PNG/GIF ≤500KB" [ref=e318]:
+          - generic [ref=e319]: 赞赏引导图
+          - img "赞赏引导图" [ref=e321]
+          - generic [ref=e322]: 750×560 PNG/GIF ≤500KB
+        - figure "750×750 PNG/GIF ≤500KB" [ref=e323]:
+          - generic [ref=e324]: 赞赏致谢图
+          - img "赞赏致谢图" [ref=e326]
+          - generic [ref=e327]: 750×750 PNG/GIF ≤500KB

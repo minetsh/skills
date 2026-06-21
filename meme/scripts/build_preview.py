@@ -179,7 +179,7 @@ def sticker_grid(stickers: list[dict], base_dir: Path, output_dir: Path) -> str:
               <div class="sticker-image">{visual}</div>
               <div class="sticker-meta">
                 <span class="sticker-index">#{index:02d}</span>
-                <div class="copy-value compact-copy"><span>{e(meaning or "未填写")}</span>{copy_button(meaning)}</div>
+                <div class="copy-value compact-copy"><span class="copy-name" role="button" tabindex="0" data-copy-name="{e(meaning)}" aria-label="复制含义词 {e(meaning or '未填写')}">{e(meaning or "未填写")}</span>{copy_button(meaning)}</div>
                 <span class="counter counter-{counter_state}">{len(meaning)}/4</span>
               </div>
             </article>
@@ -500,6 +500,49 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
 
     .copy-value span:first-child {{ min-width: 0; }}
 
+    .copy-name {{
+      position: relative;
+      border-radius: var(--radius-sm);
+      margin: calc(var(--space-1) * -1);
+      padding: var(--space-1) var(--space-2);
+      cursor: pointer;
+      outline: none;
+      transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    }}
+
+    .copy-name:hover,
+    .copy-name:focus-visible {{
+      color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: inset 0 0 0 1px rgba(47, 111, 98, 0.18);
+    }}
+
+    .copy-name::after {{
+      content: "已复制";
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + var(--space-2));
+      z-index: 2;
+      transform: translate(-50%, var(--space-1));
+      border: 1px solid rgba(47, 111, 98, 0.22);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--accent);
+      background: var(--soft);
+      box-shadow: 0 10px 28px rgba(57, 45, 27, 0.14);
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }}
+
+    .copy-name.is-copied::after {{
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }}
+
     .copy-button {{
       flex: 0 0 auto;
       border: 1px solid rgba(47, 111, 98, 0.24);
@@ -632,24 +675,13 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
       place-items: center;
       max-width: min(90vw, 1080px);
       max-height: 84vh;
-      padding: var(--space-4);
-      border: 1px solid rgba(255, 250, 241, 0.24);
-      border-radius: var(--radius-lg);
-      background-color: var(--checker);
-      background-image:
-        linear-gradient(45deg, rgba(47, 111, 98, 0.10) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(47, 111, 98, 0.10) 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, rgba(47, 111, 98, 0.10) 75%),
-        linear-gradient(-45deg, transparent 75%, rgba(47, 111, 98, 0.10) 75%);
-      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
-      background-size: 20px 20px;
-      box-shadow: 0 28px 90px rgba(20, 17, 12, 0.42);
+      background: transparent;
     }}
 
     .lightbox-image-panel img {{
       display: block;
-      max-width: calc(min(90vw, 1080px) - var(--space-6));
-      max-height: calc(84vh - var(--space-6));
+      max-width: min(90vw, 1080px);
+      max-height: 84vh;
       object-fit: contain;
     }}
 
@@ -824,6 +856,15 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
       }}, 1200);
     }}
 
+    function flashCopyName(element) {{
+      element.classList.add('is-copied');
+      window.clearTimeout(Number(element.dataset.copyFlashTimer || 0));
+      element.dataset.copyFlashTimer = String(window.setTimeout(function () {{
+        element.classList.remove('is-copied');
+        delete element.dataset.copyFlashTimer;
+      }}, 1200));
+    }}
+
     function openLightbox(image) {{
       if (!lightbox || !lightboxImage) {{ return; }}
       lightboxFocusReturn = document.activeElement;
@@ -859,6 +900,18 @@ def render_html(data: dict, base_dir: Path, output_path: Path) -> str:
     document.querySelectorAll('[data-copy-all]').forEach(function (button) {{
       button.addEventListener('click', function () {{
         writeCopy(COPY_ALL_TEXT).then(function () {{ flashButton(button); }});
+      }});
+    }});
+
+    document.querySelectorAll('[data-copy-name]').forEach(function (nameElement) {{
+      nameElement.addEventListener('click', function () {{
+        writeCopy(nameElement.getAttribute('data-copy-name') || '').then(function () {{ flashCopyName(nameElement); }});
+      }});
+      nameElement.addEventListener('keydown', function (event) {{
+        if (event.key === 'Enter' || event.key === ' ') {{
+          event.preventDefault();
+          nameElement.click();
+        }}
       }});
     }});
 
