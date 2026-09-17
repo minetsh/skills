@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Image2"
+  short_description: "Generate images with a portable Responses-only gpt-image-2 CLI"
+  default_prompt: "Use $codex-image2 to generate an image from my description or local reference images. Derive the skill root from the loaded SKILL.md, check local setup without exposing credentials, preserve composition by default, save to a new output path, and inspect the final image before claiming success."
